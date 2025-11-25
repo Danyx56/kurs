@@ -146,7 +146,7 @@ class InfraHeater extends BaseEntity{
 class WorkPrincList extends BaseList{
 	public function add($params){
 		$params['id']=$this->lastId;
-		$newObj=new Category($params);
+		$newObj=new WorkPrinc($params);
 		array_push($this->list,$newObj);
 		$this->lastId++;
 	}
@@ -154,7 +154,7 @@ class WorkPrincList extends BaseList{
 class SphereOfApplList extends BaseList{
 	public function add($params){
 		$params['id']=$this->lastId;
-		$newObj=new Category($params);
+		$newObj=new SphereOfAppl($params);
 		array_push($this->list,$newObj);
 		$this->lastId++;
 	}
