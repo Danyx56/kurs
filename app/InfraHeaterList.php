@@ -3,11 +3,18 @@ require_once('BaseList.php');
 require_once('InfraHeater.php');
 class InfraHeaterList extends BaseList{
 	public function add($params){
-		$params['id']=$this->lastId;
-		$newObj=new InfraHeater($params);
-		array_push($this->list,$newObj);
-		$this->lastId++;
-	}
+        $this->lastId++;
+        $elem=new InfraHeater($this->lastId,$params['model'],$params['vendor'],$params['price'],$params['workPrinc'],$params['sphereOfAppl'],$params['properties']);
+        array_push($this->list, $elem);
+    }
+    public function update($params){
+        for ($i=0;$i<count($this->list);$i++){
+            if($this->list[$i]->getId()==$params['id']){
+                $this->list[$i]->update($params['model'],$params['vendor'],$params['price'],$params['workPrinc'],$params['sphereOfAppl'],$params['properties']);
+                break;
+            }
+        }
+    }
     public function getAsJSON(){
         $content='{
     "infraHeaters": [';

@@ -6,7 +6,7 @@ require_once('./app/InfraHeaterList.php');
 require_once('./app/PropertyList.php');
 require_once('./app/SphereOfApplList.php');
 require_once('./app/WorkPrincList.php');
-$c=new InfraHeaterList();
+/* $c=new InfraHeaterList();
 $c->readFromCSV('data\InfraHeaters1.csv');
 $c->display();
 $c->update(
@@ -21,7 +21,7 @@ $c->update(
 	]
 );
 $c->writeToCSV('data\InfraHeaters1.csv');
-$c->display();
+$c->display(); */
 /* $c->delete(1);
 $c->display(); */
 ?>

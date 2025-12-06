@@ -7,14 +7,14 @@ class InfraHeater extends BaseEntity{
 	private $workPrinc;
 	private $sphereOfAppl;
     private $properties;
-    public function __construct($params){
-        $this->id=$params['id'];
-        $this->model=$params['model'];
-		$this->vendor=$params['vendor'];
-		$this->price=$params['price'];
-		$this->workPrinc=$params['workPrinc'];
-		$this->sphereOfAppl=$params['sphereOfAppl'];
-		$this->properties=$params['properties'];
+    public function __construct($id,$model,$vendor,$price,$workPrinc,$sphereOfAppl,$properties){
+        $this->id=$id;
+        $this->model=$model;
+        $this->vendor=$vendor;
+        $this->price=$price;
+        $this->workPrinc=$workPrinc;
+        $this->sphereOfAppl=$sphereOfAppl;
+        $this->properties=$properties;
     }
     public function display(){
         echo $this->id.". ".$this->vendor." ".$this->model."</br>";
@@ -26,14 +26,13 @@ class InfraHeater extends BaseEntity{
             echo $propertyName . ": " . $propertyValue . "</br>";
         }
     }
-    public function update($params){
-        $this->id=$params['id'];
-        $this->model=$params['model'];
-		$this->vendor=$params['vendor'];
-		$this->price=$params['price'];
-        $this->workPrinc=$params['workPrinc'];
-		$this->sphereOfAppl=$params['sphereOfAppl'];
-		$this->properties=$params['properties'];
+    public function update($model,$vendor,$price,$workPrinc,$sphereOfAppl,$properties){
+        $this->model=$model;
+        $this->vendor=$vendor;
+        $this->price=$price;
+        $this->workPrinc=$workPrinc;
+        $this->sphereOfAppl=$sphereOfAppl;
+        $this->properties=$properties;
     }
     public function __destruct(){
         $this->id=null;
@@ -63,7 +62,7 @@ class InfraHeater extends BaseEntity{
                             <value>'.$propertyValue.'</value>
             </property>';
         }
-        return '<infraheater>
+        return '<sunscreen>
                     <id>'.$this->id.'</id>
                     <model>'.$this->model.'</model>
                     <vendor>'.$this->vendor.'</vendor>
@@ -71,10 +70,39 @@ class InfraHeater extends BaseEntity{
                     <workprinc>'.$this->workPrinc.'</workprinc>
                     <sphereofappl>'.$this->sphereOfAppl.'</sphereofappl>
                     <properties>'.$properties.'</properties>
-                </infraheater>';
+                </sunscreen>';
+    }
+    public function getAsAssociativeArray(){
+        return [
+                'id'=>$this->id,
+                'model'=>$this->model,
+                'vendor'=>$this->vendor,
+                'price'=>$this->price,
+                'workPrinc'=>$this->workPrinc,
+                'sphereOfAppl'=>$this->sphereOfAppl,
+                'properties'=>$this->properties
+                ];
+    }
+    public function getAsTableRow(){
+        $properties="";
+        foreach (json_decode($this->properties) as $propertyName => $propertyValue) {
+            $properties.= $propertyName . ": " . $propertyValue . "</br>";
+        }
+        return '<tr>
+                    <td>'.$this->id.'</td>
+                    <td>'.$this->model.'</td>
+                    <td>'.$this->vendor.'</td>
+                    <td>'.$this->workPrinc.'</td>
+                    <td>'.$this->sphereOfAppl.'</td>
+                    <td>'.$this->price.'</td>
+                    <td>'.$properties.'</td>
+                    <td>
+                        <a class="btn btn-warning" href="./InfraHeaters.php?action=update&id='.$this->id.'">Редагувати</a>
+                        <a class="btn btn-danger" href="./InfraHeaters.php?action=delete&id='.$this->id.'">Видалити</a>
+                    </td>
+                </tr>';
     }
     public function getAsIndexedArray(){
-        return [$this->id,$this->model,$this->vendor,$this->price,$this->workPrinc,$this->sphereOfAppl,$this->properties];
+        return [$this->model,$this->vendor,$this->price,$this->workPrinc,$this->sphereOfAppl,$this->properties];
     }
 }
-?>

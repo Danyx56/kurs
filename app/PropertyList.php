@@ -2,12 +2,19 @@
 require_once('BaseList.php');
 require_once('Property.php');
 class PropertyList extends BaseList{
-	public function add($params){
-		$params['id']=$this->lastId;
-		$newObj=new Property($params);
-		array_push($this->list,$newObj);
-		$this->lastId++;
-	}
+    public function add($params){
+        $this->lastId++;
+        $elem=new Property($this->lastId,$params['name'],$params['units']);
+        array_push($this->list, $elem);
+    }
+    public function update($params){
+        for ($i=0;$i<count($this->list);$i++){
+            if($this->list[$i]->getId()==$params['id']){
+                $this->list[$i]->update($params['name'],$params['units']);
+                break;
+            }
+        }
+    }
     public function getAsJSON(){
         $content='{
     "properties": [';
@@ -28,7 +35,7 @@ class PropertyList extends BaseList{
         $content.='</properties>';
         return $content;
     }
-	public function readFromCSV($filePath){
+    public function readFromCSV($filePath){
         $fp = fopen($filePath, 'r');
         if ($fp === false) {
             die('Error: Cannot open the CSV file.');
@@ -39,4 +46,3 @@ class PropertyList extends BaseList{
         fclose($fp);
     }
 }
-?>

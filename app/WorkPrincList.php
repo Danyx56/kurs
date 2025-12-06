@@ -3,11 +3,18 @@ require_once('BaseList.php');
 require_once('WorkPrinc.php');
 class WorkPrincList extends BaseList{
 	public function add($params){
-		$params['id']=$this->lastId;
-		$newObj=new WorkPrinc($params);
-		array_push($this->list,$newObj);
-		$this->lastId++;
-	}
+        $this->lastId++;
+        $elem=new WorkPrinc($this->lastId,$params['name']);
+        array_push($this->list, $elem);
+    }
+    public function update($params){
+        for ($i=0;$i<count($this->list);$i++){
+            if($this->list[$i]->getId()==$params['id']){
+                $this->list[$i]->update($params['name']);
+                break;
+            }
+        }
+    }
     public function getAsJSON(){
         $content='{
     "workPrincs": [';
