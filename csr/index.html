@@ -155,17 +155,15 @@
                                 <input type="text" name="model" value="" class="form-control" placeholder="Модель" required/>
                             </p>
                             <p>
-                                <input type="text" name="workPrinc" value="" class="form-control" placeholder="Принцип роботи" required/>
+                                <select class="form-select" name="workprincid" required placeholder="Принцип роботи"></select>
                             </p>
                             <p>
-                                <input type="text" name="sphereOfAppl" value="" class="form-control" placeholder="Сфера застосування" required/>
+                                <select class="form-select" name="sphereofapplid" required placeholder="Сфера застосування"></select>
                             </p>
                             <p>
                                 <input type="text" name="price" value="" class="form-control" placeholder="Ціна" required/>
                             </p>
-                            <p>
-                                <input type="text" name="properties" value='' class="form-control" placeholder="Характеристики" required/>
-                            </p>
+                            <div id="propertiesInputContainer"></div>
                             <p>
                                 <input type="hidden" name="id" value=""/>
                                 <button class="btn btn-success" type="submit">Зберегти</button>

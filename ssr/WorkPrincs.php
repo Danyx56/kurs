@@ -7,23 +7,21 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 require_once('../app/WorkPrincList.php');
-$a = new WorkPrincList();
-$a->readFromCSV('../data/WorkPrincs.csv');
 $item=null;
 if($_SERVER['REQUEST_METHOD']=='POST'){
+    $a = new WorkPrincList();
+    $a->getAllFromDatabase();
     if($_POST['id']==""){
-        $a->add(['name'=>$_POST['name']]);
-        $a->writeToCSV('../data/WorkPrincs.csv');
+        $a->insertIntoDatabase(['name'=>$_POST['name']]);
     } else{
-        $a->update(['id'=>$_POST['id'],'name'=>$_POST['name']]);
-        $a->writeToCSV('../data/WorkPrincs.csv');
+        $a->updateDatabaseById(['id'=>$_POST['id'],'name'=>$_POST['name']]);
         header('Location: WorkPrincs.php');
     }
-    
 } else{
+    $a = new WorkPrincList();
+    $a->getAllFromDatabase();
     if(isset($_GET['action'])&&$_GET['action']=='delete'){
-        $a->delete($_GET['id']);
-        $a->writeToCSV('../data/WorkPrincs.csv');
+        $a->deleteFromDatabaseById($_GET['id']);
         header('Location: WorkPrincs.php');
     } else if(isset($_GET['action'])&&$_GET['action']=='update'){
         $item=$a->getById($_GET['id']);

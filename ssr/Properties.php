@@ -1,26 +1,26 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 session_start();
 if(!$_SESSION['user']){
     header('Location: login.php');
 }
 require_once('../app/PropertyList.php');
 $a = new PropertyList();
-$a->readFromCSV('../data/Properties.csv');
+$a->getAllFromDatabase();
 $item=null;
 if($_SERVER['REQUEST_METHOD']=='POST'){
     if($_POST['id']==""){
-        $a->add(['name'=>$_POST['name'], 'units'=>$_POST['units']]);
-        $a->writeToCSV('../data/Properties.csv');
+        $a->insertIntoDatabase(['name'=>$_POST['name'], 'units'=>$_POST['units']]);
     } else{
-        $a->update(['id'=>$_POST['id'],'name'=>$_POST['name'], 'units'=>$_POST['units']]);
-        $a->writeToCSV('../data/Properties.csv');
+        $a->updateDatabaseById(['id'=>$_POST['id'],'name'=>$_POST['name'], 'units'=>$_POST['units']]);
         header('Location: Properties.php');
     }
     
 } else{
     if(isset($_GET['action'])&&$_GET['action']=='delete'){
-        $a->delete($_GET['id']);
-        $a->writeToCSV('../data/Properties.csv');
+        $a->deleteFromDatabaseById($_GET['id']);
         header('Location: Properties.php');
     } else if(isset($_GET['action'])&&$_GET['action']=='update'){
         $item=$a->getById($_GET['id']);

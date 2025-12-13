@@ -47,4 +47,11 @@ class WorkPrinc extends BaseEntity{
         $this->id=null;
         $this->name=null;
     }
+    public function getAsOption($isSelected){
+        if($isSelected){
+            return "<option value='$this->id' selected>$this->name</option>";
+        } else{
+            return "<option value='$this->id'>$this->name</option>";
+        }
+    }
 }

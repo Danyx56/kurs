@@ -12,6 +12,8 @@ const infraHeatersUrl=`http://localhost/php/kurs/api/Heaters.php`;
 const infraHeatersTableBody=document.querySelector('#infraHeaterTable tbody');
 const infraHeatersForm=document.getElementById('infraHeaterForm');
 const loginForm=document.getElementById('loginForm');
+const workPrincDropdown=document.querySelector('#infraHeaterForm select[name="workprincid"]');
+const sphereOfApplDropdown=document.querySelector('#infraHeaterForm select[name="sphereofapplid"]');
 const profileUrl=`http://localhost/php/kurs/api/Profile.php`;
 function getLoginInfo(){
     fetch(profileUrl)
@@ -56,7 +58,9 @@ function displayWorkPrincs(){
     .then(data => {
         let workPrincs=data.workPrincs;
         let content=``;
+        let dropDownOptions=``;
         for (let i=0;i<workPrincs.length;i++){
+            dropDownOptions+=`<option value="${workPrincs[i].id}">${workPrincs[i].name}</option>`;
             content+=`<tr>
                     <td>${workPrincs[i].id}</td>
                     <td>${workPrincs[i].name}</td>
@@ -66,6 +70,7 @@ function displayWorkPrincs(){
                     </td>
                 </tr>`;
         }
+        workPrincDropdown.innerHTML=dropDownOptions;
         workPrincsTableBody.innerHTML=content;
     })
     .catch(error => {
@@ -83,7 +88,9 @@ function displaySpheresOfAppl(){
     .then(data => {
         let spheresOfAppl=data.spheresOfAppl;
         let content=``;
+        let dropDownOptions=``;
         for (let i=0;i<spheresOfAppl.length;i++){
+            dropDownOptions+=`<option value="${spheresOfAppl[i].id}">${spheresOfAppl[i].name}</option>`;
             content+=`<tr>
                     <td>${spheresOfAppl[i].id}</td>
                     <td>${spheresOfAppl[i].name}</td>
@@ -93,6 +100,7 @@ function displaySpheresOfAppl(){
                     </td>
                 </tr>`;
         }
+        sphereOfApplDropdown.innerHTML=dropDownOptions;
         spheresOfApplTableBody.innerHTML=content;
     })
     .catch(error => {
@@ -110,6 +118,7 @@ function displayProperties(){
     .then(data => {
         let properties=data.properties;
         let content=``;
+        let inputsContent=``;
         for (let i=0;i<properties.length;i++){
             content+=`<tr>
                     <td>${properties[i].id}</td>
@@ -120,8 +129,12 @@ function displayProperties(){
                         <a class="btn btn-danger delete-property-btn" data-id="${properties[i].id}" href="#">Видалити</a>
                     </td>
                 </tr>`;
+            inputsContent+=`<p>
+            <input type="text" class="form-control prop-input" required placeholder="${properties[i].name} ${properties[i].units}" name="prop_${properties[i].id}"/>
+            </p>`
         }
         propertiesTableBody.innerHTML=content;
+        document.getElementById('propertiesInputContainer').innerHTML=inputsContent;
     })
     .catch(error => {
         console.error('There was a problem with the fetch operation:', error);
@@ -140,15 +153,17 @@ function displayInfraHeaters(){
         let content=``;
         for (let i=0;i<infraHeaters.length;i++){
             let propertiesContent=``;
-            for (const [key, value] of Object.entries(infraHeaters[i].properties)) {
-                propertiesContent+=`${key}: ${value} </br>`;
+            for (j=0;j<infraHeaters[i].properties.length;j++){
+                propertiesContent+=`
+                ${infraHeaters[i].properties[j].name}: ${infraHeaters[i].properties[j].value} ${infraHeaters[i].properties[j].units} </br>
+                `
             }
             content+=`<tr>
                     <td>${infraHeaters[i].id}</td>
                     <td>${infraHeaters[i].vendor}</td>
                     <td>${infraHeaters[i].model}</td>
-                    <td>${infraHeaters[i].workPrinc}</td>
-                    <td>${infraHeaters[i].sphereOfAppl}</td>
+                    <td>${infraHeaters[i].workPrincname}</td>
+                    <td>${infraHeaters[i].sphereOfApplname}</td>
                     <td>${infraHeaters[i].price}</td>
                     <td>${propertiesContent}</td>
                     <td>
@@ -313,14 +328,19 @@ function displayInfraHeaters(){
     });
     infraHeatersForm.addEventListener("submit", function(event) {
         event.preventDefault(); 
+        let propInputs=document.querySelectorAll('.prop-input');
+        let inputValuesArray=[];
+        for(let i=0;i<propInputs.length;i++){
+            inputValuesArray[propInputs[i].getAttribute('name')]=propInputs[i].value;
+        }
         const dataToSend = {
             vendor: document.querySelector('#infraHeaterForm input[name="vendor"]').value,
             model: document.querySelector('#infraHeaterForm input[name="model"]').value,
             price:document.querySelector('#infraHeaterForm input[name="price"]').value,
-            workPrinc: document.querySelector('#infraHeaterForm input[name="workPrinc"]').value,
-            sphereOfAppl: document.querySelector('#infraHeaterForm input[name="sphereOfAppl"]').value,
-            properties: document.querySelector('#infraHeaterForm input[name="properties"]').value,
-            id:document.querySelector('#infraHeaterForm input[name="id"]').value
+            workprincid: document.querySelector('#infraHeaterForm select[name="workprincid"]').value,
+            sphereofapplid: document.querySelector('#infraHeaterForm select[name="sphereofapplid"]').value,
+            id:document.querySelector('#infraHeaterForm input[name="id"]').value,
+            ...inputValuesArray
         };
         let options={}
         if(dataToSend['id']){
@@ -465,11 +485,13 @@ document.addEventListener('click', function(event) {
         let infraHeater=data;
             document.querySelector('#infraHeaterForm input[name="model"]').value=infraHeater.model,
             document.querySelector('#infraHeaterForm input[name="vendor"]').value=infraHeater.vendor,
-            document.querySelector('#infraHeaterForm input[name="workPrinc"]').value=infraHeater.workPrinc,
-            document.querySelector('#infraHeaterForm input[name="sphereOfAppl"]').value=infraHeater.sphereOfAppl,
+            document.querySelector('#infraHeaterForm select[name="workprincid"]').value=infraHeater.workPrincid,
+            document.querySelector('#infraHeaterForm select[name="sphereofapplid"]').value=infraHeater.sphereOfApplid,
             document.querySelector('#infraHeaterForm input[name="price"]').value=infraHeater.price,
-            document.querySelector('#infraHeaterForm input[name="properties"]').value=infraHeater.properties,
-            document.querySelector('#infraHeaterForm input[name="id"]').value=infraHeater.id
+            document.querySelector('#infraHeaterForm input[name="id"]').value=infraHeater.id;
+            for (let i=0;i<infraHeater.properties.length;i++){
+                document.querySelector('#infraHeaterForm input[name="prop_'+infraHeater.properties[i].propertyid+'"]').value=infraHeater.properties[i].value;
+            }
         });    
   }
    else if (event.target.classList.contains('nav-btn')) {

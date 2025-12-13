@@ -47,6 +47,11 @@ class Property extends BaseEntity{
                     </td>
                 </tr>';
     }
+    public function getAsInput($value){
+        return '<p>
+                            <input type="text" name="prop-'.$this->id.'" value="'.$value.'" class="form-control" placeholder="'.$this->name.' '.$this->units.'" required/>
+                        </p>';
+    }
     public function __destruct(){
         $this->id=null;
         $this->name=null;

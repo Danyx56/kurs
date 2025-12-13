@@ -9,24 +9,21 @@ error_reporting(E_ALL);
 header('Content-Type: application/json; charset=utf-8');
 require_once('../app/SphereOfApplList.php');
 $a=new SphereOfApplList();
-$a->readFromCSV('../data/SpheresOfAppl.csv');
+$a->getAllFromDatabase();
 if($_SERVER['REQUEST_METHOD']=='POST'){
     $json_data = file_get_contents('php://input');
     $data=json_decode($json_data,true);
-    $a->add(['name'=>$data['name']]);
-    $a->writeToCSV('../data/SpheresOfAppl.csv');
+    $a->insertIntoDatabase(['name'=>$data['name']]);
     echo "OK!";
 }
 if($_SERVER['REQUEST_METHOD']=='UPDATE'){
     $json_data = file_get_contents('php://input');
     $data=json_decode($json_data,true);
-    $a->update(['id'=>$data['id'],'name'=>$data['name']]);
-    $a->writeToCSV('../data/SpheresOfAppl.csv');
+    $a->updateDatabaseById(['id'=>$data['id'],'name'=>$data['name']]);
     echo "OK!";
 }
 else if($_SERVER['REQUEST_METHOD']=='DELETE'){
-    $a->delete($_REQUEST['id']);
-    $a->writeToCSV('../data/SpheresOfAppl.csv');
+    $a->deleteFromDatabaseById($_GET['id']);
 } 
 else if($_SERVER['REQUEST_METHOD']=='GET'){
     if(isset($_GET['id'])){

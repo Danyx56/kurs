@@ -1,48 +1,62 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 session_start();
 if(!$_SESSION['user']){
     header('Location: login.php');
 }
 require_once('../app/InfraHeaterList.php');
+require_once('../app/SphereOfApplList.php');
+require_once('../app/WorkPrincList.php');
+require_once('../app/PropertyList.php');
+$workList=new WorkPrincList();
+$workList->getAllFromDatabase();
+$sphereList=new SphereOfApplList();
+$sphereList->getAllFromDatabase();
+$propList=new PropertyList();
+$propList->getAllFromDatabase();
+$propArray=$propList->getAsAssocArray();
 $a = new InfraHeaterList();
-$a->readFromCSV('../data/InfraHeaters.csv');
-function escapeJsonString($value) {
-    # list from www.json.org: (\b backspace, \f formfeed)    
-    $escapers =     array("\\",  "\n",  "\r",  "\t", "\x08", "\x0c","\'");
-    $replacements = array("\\\\", "\\/", "\\\"", "\\n", "\\r", "\\t",  "\\f",  "\\b","\\'");
-    $result = str_replace($escapers, $replacements, $value);
-    return $result;
-  }
 $item=null;
+$itemProps=[];
 if($_SERVER['REQUEST_METHOD']=='POST'){
     if($_POST['id']==""){
-        $a->add(['vendor'=>$_POST['vendor'], 
+        $infraHeaterid=$a->insertIntoDatabase(['vendor'=>$_POST['vendor'], 
         'model'=>$_POST['model'],
-        'workPrinc'=>$_POST['workPrinc'],
-        'sphereOfAppl'=>$_POST['sphereOfAppl'],  
-        'price'=>$_POST['price'],
-        'properties'=>$_POST['properties']
-    ]);
-        $a->writeToCSV('../data/InfraHeaters.csv');
+        'workprincid'=>$_POST['workPrincid'],
+        'sphereofapplid'=>$_POST['sphereOfApplid'],  
+        'price'=>$_POST['price']
+        ]);
+        for ($i=0;$i<count($propArray);$i++){
+            if(isset($_POST['prop-'.$propArray[$i]['id']])){
+                $a->addInfraHeaterProperty($infraHeaterid,$propArray[$i]['id'],$_POST['prop-'.$propArray[$i]['id']]);
+            }
+        }
     } else{
-        $a->update(['id'=>$_POST['id'],
+        $propArray=$propList->getAsAssocArray();
+        $a->updateDatabaseById(['id'=>$_POST['id'],
         'vendor'=>$_POST['vendor'], 
         'model'=>$_POST['model'],
-        'workPrinc'=>$_POST['workPrinc'],
-        'sphereOfAppl'=>$_POST['sphereOfAppl'],  
-        'price'=>$_POST['price'],
-        'properties'=>$_POST['properties']]);
-        $a->writeToCSV('../data/InfraHeaters.csv');
+        'workprincid'=>$_POST['workPrincid'],
+        'sphereofapplid'=>$_POST['sphereOfApplid'],   
+        'price'=>$_POST['price']]);
+        for ($i=0;$i<count($propArray);$i++){
+            if(isset($_POST['prop-'.$propArray[$i]['id']])){
+                $a->updateInfraHeaterProperty($_POST['id'],$propArray[$i]['id'],$_POST['prop-'.$propArray[$i]['id']]);
+            }
+        }
         header('Location: InfraHeaters.php');
     }
-    
+    $a->getAllFromDatabase();
 } else{
+    $a->getAllFromDatabase();
     if(isset($_GET['action'])&&$_GET['action']=='delete'){
-        $a->delete($_GET['id']);
-        $a->writeToCSV('../data/InfraHeaters.csv');
+        $a->deleteFromDatabaseById($_GET['id']);
         header('Location: InfraHeaters.php');
     } else if(isset($_GET['action'])&&$_GET['action']=='update'){
         $item=$a->getById($_GET['id']);
+        $itemProps=$a->getInfraHeaterPropertiesById($_GET['id']);
     }
     
 }
@@ -92,17 +106,15 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
                             <input type="text" name="model" value="<?php echo $item?$item['model']:'';?>" class="form-control" placeholder="Модель" required/>
                         </p>
                         <p>
-                            <input type="text" name="workPrinc" value="<?php echo $item?$item['workPrinc']:'';?>" class="form-control" placeholder="Принцип роботи" required/>
+                            <select name="workPrincid" class="form-select" placeholder="Принцип роботи" required><?php echo $workList->getAsSelectOptions($item?$item['workPrincid']:'');?></select>
                         </p>
                         <p>
-                            <input type="text" name="sphereOfAppl" value="<?php echo $item?$item['sphereOfAppl']:'';?>" class="form-control" placeholder="Сфера застосування" required/>
+                            <select name="sphereOfApplid" class="form-select" placeholder="Сфера застосування" required><?php echo $sphereList->getAsSelectOptions($item?$item['sphereOfApplid']:'');?></select>
                         </p>
                         <p>
                             <input type="text" name="price" value="<?php echo $item?$item['price']:'';?>" class="form-control" placeholder="Ціна" required/>
                         </p>
-                        <p>
-                            <input type="text" name="properties" value='<?php echo $item?escapeJsonString($item['properties']):'';?>' class="form-control" placeholder="Характеристики" required/>
-                        </p>
+                        <?php echo $propList->getAsInputGroup($itemProps); ?>
                         <p>
                             <input type="hidden" name="id" value="<?php echo $item?$item['id']:'';?>"/>
                             <button class="btn btn-success" type="submit">Зберегти</button>

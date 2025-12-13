@@ -6,22 +6,29 @@ require_once('./app/InfraHeaterList.php');
 require_once('./app/PropertyList.php');
 require_once('./app/SphereOfApplList.php');
 require_once('./app/WorkPrincList.php');
-/* $c=new InfraHeaterList();
-$c->readFromCSV('data\InfraHeaters1.csv');
-$c->display();
-$c->update(
-	[
-		'id'=>'2',
-		'model'=>'WETAIR WQH-2020',
-		'vendor'=>'WetAir',
-		'price'=>'1000',
-		'workPrinc'=>'Електричний',
-		'sphereOfAppl'=>'Побутовий',
-		'properties'=>'{"Потужність": "1200 Вт", "Площа обігріву": "20 м<sup>2</sup>", "Спосіб монтажу": "підлоговий", "Тип обігрівального елемента": "кварцовий"}'
-	]
-);
-$c->writeToCSV('data\InfraHeaters1.csv');
-$c->display(); */
-/* $c->delete(1);
-$c->display(); */
+$servername = "localhost";
+$username = "root";
+$password = "111111";
+$database ='kurs_db';
+$a=new WorkPrincList();
+// Create connection
+$conn = new mysqli($servername, $username, $password,$database);
+
+// Check connection
+if ($conn->connect_error) {
+  die("Connection failed: " . $conn->connect_error);
+}
+$sql = "SELECT * FROM workprincs";
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+  // output data of each row
+  while($row = $result->fetch_assoc()) {
+    $a->add($row);
+  }
+  $a->display();
+} else {
+  echo "0 results";
+}
+$conn->close();
 ?>

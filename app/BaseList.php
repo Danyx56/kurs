@@ -4,7 +4,6 @@ abstract class BaseList{
     protected $lastId;
     public function __construct(){
         $this->list=[];
-        $this->lastId=0;
     }
     public function display(){
         for ($i=0;$i<count($this->list);$i++){
@@ -43,6 +42,13 @@ abstract class BaseList{
             $content.=$this->list[$i]->getAsTableRow();
         }
         return $content;
+    }
+    public function getAsAssocArray(){
+        $array=[];
+        for ($i=0;$i<count($this->list);$i++){
+            array_push($array,$this->list[$i]->getAsAssociativeArray());
+        }
+        return $array;
     }
     public abstract function add($params);
     public abstract function update($params);

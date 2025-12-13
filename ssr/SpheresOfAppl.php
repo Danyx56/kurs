@@ -1,26 +1,27 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 session_start();
 if(!$_SESSION['user']){
     header('Location: login.php');
 }
 require_once('../app/SphereOfApplList.php');
-$a = new SphereOfApplList();
-$a->readFromCSV('../data/SpheresOfAppl.csv');
 $item=null;
 if($_SERVER['REQUEST_METHOD']=='POST'){
+    $a = new SphereOfApplList();
+    $a->getAllFromDatabase();
     if($_POST['id']==""){
-        $a->add(['name'=>$_POST['name']]);
-        $a->writeToCSV('../data/SpheresOfAppl.csv');
+        $a->insertIntoDatabase(['name'=>$_POST['name']]);
     } else{
-        $a->update(['id'=>$_POST['id'],'name'=>$_POST['name']]);
-        $a->writeToCSV('../data/SpheresOfAppl.csv');
+        $a->updateDatabaseById(['id'=>$_POST['id'],'name'=>$_POST['name']]);
         header('Location: SpheresOfAppl.php');
     }
-    
 } else{
+    $a = new SphereOfApplList();
+    $a->getAllFromDatabase();
     if(isset($_GET['action'])&&$_GET['action']=='delete'){
-        $a->delete($_GET['id']);
-        $a->writeToCSV('../data/SpheresOfAppl.csv');
+        $a->deleteFromDatabaseById($_GET['id']);
         header('Location: SpheresOfAppl.php');
     } else if(isset($_GET['action'])&&$_GET['action']=='update'){
         $item=$a->getById($_GET['id']);
