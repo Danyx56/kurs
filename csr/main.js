@@ -1,20 +1,20 @@
 const contentTabs=document.querySelectorAll('.tab-content');
-const workPrincsUrl=`http://localhost/php/kurs/api/WorkPrincs.php`;
+const workPrincsUrl=`http://localhost/php/kurs/api/WorkPrincs`;
 const workPrincsTableBody=document.querySelector('#workPrincTable tbody');
 const workPrincsForm=document.getElementById('workPrincForm');
-const spheresOfApplUrl=`http://localhost/php/kurs/api/SpheresOfAppl.php`;
+const spheresOfApplUrl=`http://localhost/php/kurs/api/SpheresOfAppl`;
 const spheresOfApplTableBody=document.querySelector('#sphereOfApplTable tbody');
 const spheresOfApplForm=document.getElementById('sphereOfApplForm');
-const propertiesUrl=`http://localhost/php/kurs/api/Properties.php`;
+const propertiesUrl=`http://localhost/php/kurs/api/Properties`;
 const propertiesTableBody=document.querySelector('#propertyTable tbody');
 const propertiesForm=document.getElementById('propertyForm');
-const infraHeatersUrl=`http://localhost/php/kurs/api/Heaters.php`;
+const infraHeatersUrl=`http://localhost/php/kurs/api/Heaters`;
 const infraHeatersTableBody=document.querySelector('#infraHeaterTable tbody');
 const infraHeatersForm=document.getElementById('infraHeaterForm');
 const loginForm=document.getElementById('loginForm');
 const workPrincDropdown=document.querySelector('#infraHeaterForm select[name="workprincid"]');
 const sphereOfApplDropdown=document.querySelector('#infraHeaterForm select[name="sphereofapplid"]');
-const profileUrl=`http://localhost/php/kurs/api/Profile.php`;
+const profileUrl=`http://localhost/php/kurs/api/Profile`;
 function getLoginInfo(){
     fetch(profileUrl)
     .then(response => {
