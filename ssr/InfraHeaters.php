@@ -1,7 +1,7 @@
 <?php
-ini_set('display_errors', 1);
+/* ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+error_reporting(E_ALL); */
 session_start();
 if(!$_SESSION['user']){
     header('Location: login.php');
@@ -46,11 +46,14 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
                 $a->updateInfraHeaterProperty($_POST['id'],$propArray[$i]['id'],$_POST['prop-'.$propArray[$i]['id']]);
             }
         }
-        header('Location: InfraHeaters.php');
     }
-    $a->getAllFromDatabase();
+    header('Location: InfraHeaters.php');
 } else{
-    $a->getAllFromDatabase();
+    if(isset($_GET['search'])){
+        $a->getAllFromDatabaseBySearchCriteria($_GET['search']);
+    }else{
+        $a->getAllFromDatabase();
+    }
     if(isset($_GET['action'])&&$_GET['action']=='delete'){
         $a->deleteFromDatabaseById($_GET['id']);
         header('Location: InfraHeaters.php');
@@ -79,6 +82,10 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
             <h1>Інфрачервоні обігрівачі</h1>
             <div class="row">
                 <div class="col-md-8">
+                    <form method="GET">
+                        <input type="text" required name="search" placeholder="Шукати"/>
+                        <button type="submit" class="btn btn-primary">Пошук</button>
+                    </form>
                     <table class="table">
                         <thead>
                             <tr>

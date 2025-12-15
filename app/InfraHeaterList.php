@@ -115,5 +115,21 @@ class InfraHeaterList extends BaseList{
             }
         }
     }
+    public function getAllFromDatabaseBySearchCriteria($search){
+        global $conn;
+        $stmt = $conn->prepare("SELECT infraheaters.*, workprincs.name workprincname, spheresofappl.name sphereofapplname FROM infraheaters
+        INNER JOIN workprincs ON workprincs.id=infraheaters.workprincid
+        INNER JOIN spheresofappl ON spheresofappl.id=infraheaters.sphereofapplid WHERE infraheaters.vendor LIKE ? OR infraheaters.model LIKE ? OR workprincs.name LIKE ? OR spheresofappl.name LIKE ?");
+        $stmt->bind_param("ssss", $search,$search,$search,$search);
+        $search="%".$search."%";
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows > 0) {
+        // output data of each row
+        while($row = $result->fetch_assoc()) {
+            $this->add($row);
+        }
+        }
+    }
 }
 ?>

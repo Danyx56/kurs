@@ -15,6 +15,7 @@ const loginForm=document.getElementById('loginForm');
 const workPrincDropdown=document.querySelector('#infraHeaterForm select[name="workprincid"]');
 const sphereOfApplDropdown=document.querySelector('#infraHeaterForm select[name="sphereofapplid"]');
 const profileUrl=`http://localhost/php/kurs/api/Profile`;
+const searchForm=document.getElementById('searchForm');
 function getLoginInfo(){
     fetch(profileUrl)
     .then(response => {
@@ -33,7 +34,7 @@ function getLoginInfo(){
             displayWorkPrincs();
             displaySpheresOfAppl();
             displayProperties();
-            displayInfraHeaters();
+            displayInfraHeaters('');
         }
     })
     .catch(error => {
@@ -140,8 +141,12 @@ function displayProperties(){
         console.error('There was a problem with the fetch operation:', error);
     });
 }
-function displayInfraHeaters(){
-    fetch(infraHeatersUrl)
+function displayInfraHeaters(search){
+    let url=infraHeatersUrl;
+    if(search!=''){
+        url+='?search='+search;
+    }
+    fetch(url)
     .then(response => {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -178,6 +183,11 @@ function displayInfraHeaters(){
         console.error('There was a problem with the fetch operation:', error);
     });
 }
+searchForm.addEventListener("submit", function(event) {
+        event.preventDefault(); 
+        displayInfraHeaters(document.querySelector('#searchForm input[name="search"]').value);
+        searchForm.reset();
+    });
  workPrincsForm.addEventListener("submit", function(event) {
         event.preventDefault(); 
         const dataToSend = {
@@ -246,7 +256,7 @@ function displayInfraHeaters(){
                     displayWorkPrincs();
                     displaySpheresOfAppl();
                     displayProperties();
-                    displayInfraHeaters();
+                    displayInfraHeaters('');
                 }
             })
             .catch(error => {
@@ -368,7 +378,7 @@ function displayInfraHeaters(){
             }
             infraHeatersForm.reset();
             document.querySelector('#infraHeaterForm input[name="id"]').value='';
-            displayInfraHeaters();
+            displayInfraHeaters('');
         });
 
     });
@@ -469,7 +479,7 @@ document.addEventListener('click', function(event) {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            displayInfraHeaters();
+            displayInfraHeaters('');
         });    
   } else if (event.target.classList.contains('edit-infraHeater-btn')) {
     event.preventDefault();

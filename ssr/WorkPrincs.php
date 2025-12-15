@@ -3,9 +3,9 @@ session_start();
 if(!$_SESSION['user']){
     header('Location: login.php');
 }
-ini_set('display_errors', 1);
+/* ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+error_reporting(E_ALL); */
 require_once('../app/WorkPrincList.php');
 $item=null;
 if($_SERVER['REQUEST_METHOD']=='POST'){

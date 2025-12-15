@@ -55,9 +55,12 @@ else if($_SERVER['REQUEST_METHOD']=='GET'){
         $item=$a->getById($_GET['id']);
         $item['properties']=$a->getInfraHeaterPropertiesById($_GET['id']);
         echo json_encode($item);
+    } else if(isset($_GET['search'])){
+        $a=new InfraHeaterList();
+        $a->getAllFromDatabaseBySearchCriteria($_GET['search']);
+        echo $a->getAsJSON();
     } else{
         echo $a->getAsJSON();
     }
-    
 }
 ?>
