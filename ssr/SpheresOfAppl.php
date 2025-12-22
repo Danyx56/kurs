@@ -1,33 +1,48 @@
 <?php
-/* ini_set('display_errors', 1);
+ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
-error_reporting(E_ALL); */
+error_reporting(E_ALL);
 session_start();
 if(!$_SESSION['user']){
     header('Location: login.php');
 }
 require_once('../app/SphereOfApplList.php');
 $item=null;
+$errorMessage = '';
+$a = new SphereOfApplList();
 if($_SERVER['REQUEST_METHOD']=='POST'){
-    $a = new SphereOfApplList();
     $a->getAllFromDatabase();
     if($_POST['id']==""){
-        $a->insertIntoDatabase(['name'=>$_POST['name']]);
+        $result = $a->insertIntoDatabase(['name'=>$_POST['name']]);
+        if ($result === false) {
+            $errorMessage = "Помилка: Така сфера застосування вже існує!";
+        }
     } else{
-        $a->updateDatabaseById(['id'=>$_POST['id'],'name'=>$_POST['name']]);
-        header('Location: SpheresOfAppl.php');
+        $result = $a->updateDatabaseById(['id'=>$_POST['id'],'name'=>$_POST['name']]);
+        if ($result === false) {
+            $errorMessage = "Помилка: Сфера застосування з такою назвою вже існує!";
+            $item = ['id'=>$_POST['id'], 'name'=>$_POST['name']];
+        } else {
+            header('Location: SpheresOfAppl.php');
+            exit();
+        }
     }
 } else{
-    $a = new SphereOfApplList();
-    $a->getAllFromDatabase();
     if(isset($_GET['action'])&&$_GET['action']=='delete'){
-        $a->deleteFromDatabaseById($_GET['id']);
-        header('Location: SpheresOfAppl.php');
+        if(!$a->deleteFromDatabaseById($_GET['id'])){
+            $errorMessage = "Помилка: Неможливо видалити, сфера використовується в обігрівачах!";
+            $a->getAllFromDatabase();
+        } else {
+            header('Location: SpheresOfAppl.php');
+            exit();
+        }
     } else if(isset($_GET['action'])&&$_GET['action']=='update'){
+        $a->getAllFromDatabase();
         $item=$a->getById($_GET['id']);
+    } else {
+        $a->getAllFromDatabase();
     }
-    
-}$json_data = file_get_contents('php://input');
+}
 
 ?>
 <html>
@@ -35,6 +50,7 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
         <meta charset="utf-8"/>
         <title>Сфери застосування</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">    
+        <link rel="stylesheet" href="../assets/styles.css">
     </head>
     <body>
         <div class="container">
@@ -42,6 +58,7 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
                 <li><a class="btn btn-outline nav-btn" href="./WorkPrincs.php">Принципи роботи</a></li>
                 <li><a class="btn btn-outline nav-btn" href="./SpheresOfAppl.php">Сфери застосування</a></li>
                 <li><a class="btn btn-outline nav-btn" href="./Properties.php">Характеристики</a></li>
+                <li><a class="btn btn-outline nav-btn" href="./Vendors.php">Виробники</a></li>
                 <li><a class="btn btn-outline nav-btn" href="./InfraHeaters.php">Інфрачервоні обігрівачі</a></li>
                 <li><a class="btn btn-outline nav-btn" href="./logout.php">Вийти</a></li>
             </ul>
@@ -63,6 +80,9 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
                 </div>
                 <div class="col-md-4">
                     <form method="POST">
+                        <?php if($errorMessage): ?>
+                            <div class="alert alert-danger"><?php echo $errorMessage; ?></div>
+                        <?php endif; ?>
                         <p>
                             <input type="text" name="name" value="<?php echo $item?$item['name']:'';?>" class="form-control" placeholder="Назва сфери застосування" required/>
                         </p>

@@ -8,27 +8,6 @@ class Property extends BaseEntity{
         $this->name=$name;
         $this->units=$units;
     }
-    public function display(){
-        echo $this->id.". ".$this->name." <i>(".$this->units.")</i></br>";
-    }
-    public function update($name, $units){
-        $this->name=$name;
-        $this->units=$units;
-    }
-    public function getAsJSON(){
-        return '{
-            "id": "'.$this->id.'",
-            "name": "'.$this->name.'",
-            "units": "'.$this->units.'"
-        }';
-    }
-    public function getAsXML(){
-        return '<property>
-                    <id>'.$this->id.'</id>
-                    <name>'.$this->name.'</name>
-                    <units>'.$this->units.'</units>
-                </property>';
-    }
     public function getAsAssociativeArray(){
         return [
                 'id'=>$this->id,
@@ -37,27 +16,30 @@ class Property extends BaseEntity{
                 ];
     }
     public function getAsTableRow(){
-        return '<tr>
-                    <td>'.$this->id.'</td>
-                    <td>'.$this->name.'</td>
+        return '<tr class="align-middle shadow-hover">
+                    <td class="fw-bold text-center">'.$this->id.'</td>
+                    <td class="fw-semibold text-primary">'.$this->name.'</td>
                     <td>'.$this->units.'</td>
                     <td>
-                        <a class="btn btn-warning" href="./Properties.php?action=update&id='.$this->id.'">Редагувати</a>
-                        <a class="btn btn-danger" href="./Properties.php?action=delete&id='.$this->id.'">Видалити</a>
+                        <a class="btn btn-outline-warning btn-sm me-1" href="./Properties.php?action=update&id='.$this->id.'">Редагувати</a>
+                        <a class="btn btn-outline-danger btn-sm" href="./Properties.php?action=delete&id='.$this->id.'">Видалити</a>
                     </td>
                 </tr>';
     }
     public function getAsInput($value){
-        return '<p>
+        if($this->name=='Додаткові функції'){
+            return '<p>
+                            <input type="text" name="prop-'.$this->id.'" value="'.$value.'" class="form-control" placeholder="'.$this->name.'"/>
+                        </p>';
+        }else{
+            return '<p>
                             <input type="text" name="prop-'.$this->id.'" value="'.$value.'" class="form-control" placeholder="'.$this->name.' '.$this->units.'" required/>
                         </p>';
+        }
     }
     public function __destruct(){
         $this->id=null;
         $this->name=null;
         $this->units=null;
-    }
-    public function getAsIndexedArray(){
-        return [$this->name,$this->units];
     }
 }

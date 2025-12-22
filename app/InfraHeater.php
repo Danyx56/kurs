@@ -3,71 +3,37 @@ require_once('BaseEntity.php');
 require_once('DBConnect.php');
 class InfraHeater extends BaseEntity{
     private $model;
-    private $vendor;
+    private $vendorid;
+    private $vendorname;
     private $price;
 	private $workPrincid;
     private $workPrincname;
 	private $sphereOfApplid;
     private $sphereOfApplname;
-    public function __construct($id,$model,$vendor,$price,$workPrincid,$workPrincname,$sphereOfApplid,$sphereOfApplname){
+    public function __construct($id,$model,$vendorid,$vendorname,$price,$workPrincid,$workPrincname,$sphereOfApplid,$sphereOfApplname){
         $this->id=$id;
         $this->model=$model;
-        $this->vendor=$vendor;
+        $this->vendorid=$vendorid;
+        $this->vendorname=$vendorname;
         $this->price=$price;
         $this->workPrincid=$workPrincid;
         $this->workPrincname=$workPrincname;
         $this->sphereOfApplid=$sphereOfApplid;
         $this->sphereOfApplname=$sphereOfApplname;
     }
-    public function display(){
-        echo $this->id.". ".$this->vendor." ".$this->model."</br>";
-        echo "Принцип роботи: <i>".$this->workPrincid."</i></br>";
-		echo "Сфера застосування: <i>".$this->sphereOfApplid."</i></br>";
-        echo "Ціна: <b>".$this->price."</b> грн</br>";
-    }
-    public function update($model,$vendor,$price,$workPrincid,$sphereOfApplid){
-        $this->model=$model;
-        $this->vendor=$vendor;
-        $this->price=$price;
-        $this->workPrincid=$workPrincid;
-        $this->sphereOfApplid=$sphereOfApplid;
-    }
     public function __destruct(){
         $this->id=null;
         $this->model=null;
-        $this->vendor=null;
+        $this->vendorid=null;
         $this->price=null;
         $this->workPrincid=null;
 		$this->sphereOfApplid=null;
-    }
-    public function getAsJSON(){
-        return '{
-            "id": "'.$this->id.'",
-            "model": "'.$this->model.'",
-            "vendor": "'.$this->vendor.'",
-            "price": "'.$this->price.'",
-            "workPrincid": "'.$this->workPrincid.'",
-            "workPrincname": "'.$this->workPrincname.'",
-            "sphereOfApplid": "'.$this->sphereOfApplid.'",
-            "sphereOfApplname": "'.$this->sphereOfApplname.'",
-            "properties":'.json_encode($this->getInfraHeatersProperties()).'
-        }';
-    }
-    public function getAsXML(){
-        return '<infraheater>
-                    <id>'.$this->id.'</id>
-                    <model>'.$this->model.'</model>
-                    <vendor>'.$this->vendor.'</vendor>
-                    <price>'.$this->price.'</price>
-                    <workPrinc>'.$this->workPrincid.'</workPrinc>
-                    <sphereOfAppl>'.$this->sphereOfApplid.'</sphereOfAppl>
-                </infraheater>';
     }
     public function getAsAssociativeArray(){
         return [
                 'id'=>$this->id,
                 'model'=>$this->model,
-                'vendor'=>$this->vendor,
+                'vendorid'=>$this->vendorid,
                 'price'=>$this->price,
                 'workPrincid'=>$this->workPrincid,
                 'sphereOfApplid'=>$this->sphereOfApplid
@@ -82,7 +48,6 @@ class InfraHeater extends BaseEntity{
         $result = $stmt->get_result();
         $array=[];
         if ($result->num_rows > 0) {
-        // output data of each row
         while($row = $result->fetch_assoc()) {
             array_push($array,$row);
         }
@@ -91,25 +56,25 @@ class InfraHeater extends BaseEntity{
     }
     public function getAsTableRow(){
         $propArray=$this->getInfraHeatersProperties();
-        $propertiesContent='';
+        
+        $propertiesContent='<ul class="list-unstyled mb-0 small">'; 
         for($i=0;$i<count($propArray);$i++){
-            $propertiesContent.=$propArray[$i]['name'].': '.$propArray[$i]['value'].' '.$propArray[$i]['units'].'</br>';
+            $propertiesContent.='<li><span class="text-muted">'.$propArray[$i]['name'].':</span> <strong>'.$propArray[$i]['value'].' '.$propArray[$i]['units'].'</strong></li>';
         }
-        return '<tr>
-                    <td>'.$this->id.'</td>
-                    <td>'.$this->model.'</td>
-                    <td>'.$this->vendor.'</td>
+        $propertiesContent.='</ul>';
+
+        return '<tr class="align-middle shadow-hover">
+                    <td class="fw-bold text-center">'.$this->id.'</td>
+                    <td class="fw-semibold text-primary">'.$this->model.'</td>
+                    <td>'.$this->vendorname.'</td>
                     <td>'.$this->workPrincname.'</td>
                     <td>'.$this->sphereOfApplname.'</td>
-                    <td>'.$this->price.'</td>
+                    <td class="fs-5 text-nowrap">'.$this->price.' <small class="fs-6 text-muted">грн</small></td>
                     <td>'.$propertiesContent.'</td>
-                    <td>
-                        <a class="btn btn-warning" href="./InfraHeaters.php?action=update&id='.$this->id.'">Редагувати</a>
-                        <a class="btn btn-danger" href="./InfraHeaters.php?action=delete&id='.$this->id.'">Видалити</a>
+                    <td class="text-end text-nowrap">
+                        <a class="btn btn-outline-warning btn-sm me-1" href="./InfraHeaters.php?action=update&id='.$this->id.'">Ред.</a>
+                        <a class="btn btn-outline-danger btn-sm" href="./InfraHeaters.php?action=delete&id='.$this->id.'">Вид.</a>
                     </td>
                 </tr>';
-    }
-    public function getAsIndexedArray(){
-        return [$this->model,$this->vendor,$this->price,$this->workPrincid,$this->sphereOfApplid];
     }
 }

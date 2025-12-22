@@ -7,69 +7,15 @@ class PropertyList extends BaseList{
         $elem=new Property($params['id'],$params['name'],$params['units']);
         array_push($this->list, $elem);
     }
-    public function update($params){
-        for ($i=0;$i<count($this->list);$i++){
-            if($this->list[$i]->getId()==$params['id']){
-                $this->list[$i]->update($params['name'],$params['units']);
-                break;
-            }
-        }
-    }
-    public function getAsJSON(){
-        $content='{
-    "properties": [';
-        for ($i=0;$i<count($this->list);$i++){
-            $content.=$this->list[$i]->getAsJSON().",";
-        }
-        $content = substr($content, 0, -1);
-        $content.='    ]
-        }';
-        return $content;
-    }
-    public function getAsXML(){
-        $content='<properties>
-        ';
-        for ($i=0;$i<count($this->list);$i++){
-            $content.=$this->list[$i]->getAsXML();
-        }
-        $content.='</properties>';
-        return $content;
-    }
-    public function readFromCSV($filePath){
-        $fp = fopen($filePath, 'r');
-        if ($fp === false) {
-            die('Error: Cannot open the CSV file.');
-        }
-        while (($row = fgetcsv($fp,10000,",","`","\\")) !== false) {
-            $this->add(['name'=>$row[0],'units'=>$row[1]]);
-        }
-        fclose($fp);
-    }
     public function getAllFromDatabase(){
         global $conn;
-        $sql = "SELECT * FROM properties";
+        $sql = "SELECT * FROM properties ORDER BY id";
         $result = $conn->query($sql);
 
         if ($result->num_rows > 0) {
-        // output data of each row
         while($row = $result->fetch_assoc()) {
             $this->add($row);
         }
-        }
-    }
-    public function getAllFromDatabaseById($id){
-        global $conn;
-        $stmt = $conn->prepare("SELECT * FROM properties WHERE id=?");
-        $stmt->bind_param("s", $id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows > 0) {
-        // output data of each row
-        while($row = $result->fetch_assoc()) {
-            return $row;
-        }
-        } else{
-            return null;
         }
     }
     public function getAsInputGroup($itemProps){
@@ -90,6 +36,13 @@ class PropertyList extends BaseList{
     }
     public function insertIntoDatabase($params){
         global $conn;
+        $stmtCheck = $conn->prepare("SELECT id FROM properties WHERE name = ?");
+        $stmtCheck->bind_param("s", $params['name']);
+        $stmtCheck->execute();
+        if ($stmtCheck->get_result()->num_rows > 0) {
+            return false;
+        }
+
         $stmt = $conn->prepare("INSERT INTO properties VALUES (DEFAULT, ?,?)");
         $stmt->bind_param("ss", $params['name'],$params['units']);
         $stmt->execute();
@@ -98,9 +51,15 @@ class PropertyList extends BaseList{
     }
     public function updateDatabaseById($params){
         global $conn;
+        $stmtCheck = $conn->prepare("SELECT id FROM properties WHERE name = ? AND id != ?");
+        $stmtCheck->bind_param("ss", $params['name'], $params['id']);
+        $stmtCheck->execute();
+        if ($stmtCheck->get_result()->num_rows > 0) return false;
+
         $stmt = $conn->prepare("UPDATE `properties` SET `name`=?, `units`=? WHERE `id`=?;");
         $stmt->bind_param("sss", $params['name'],$params['units'],$params['id']);
         $stmt->execute();
+        return true;
     }
     public function deleteFromDatabaseById($id){
         global $conn;

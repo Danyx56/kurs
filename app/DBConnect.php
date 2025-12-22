@@ -1,7 +1,7 @@
 <?php
 $servername = "localhost";
 $username = "root";
-$password = "";
+$password = "sedxQAZ1";
 $database ='kurs_db';
 // Create connection
 $conn = new mysqli($servername, $username, $password,$database);

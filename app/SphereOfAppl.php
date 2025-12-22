@@ -6,40 +6,19 @@ class SphereOfAppl extends BaseEntity{
         $this->id=$id;
         $this->name=$name;
     }
-    public function display(){
-        echo $this->id.". ".$this->name."</br>";
-    }
-    public function update($name){
-        $this->name=$name;
-    }
-    public function getAsIndexedArray(){
-        return [$this->name];
-    }
     public function getAsAssociativeArray(){
         return [
                 'id'=>$this->id,
                 'name'=>$this->name
                 ];
     }
-    public function getAsJSON(){
-        return '{
-            "id": "'.$this->id.'",
-            "name": "'.$this->name.'"
-        }';
-    }
-    public function getAsXML(){
-        return '<sphereofAppl>
-                    <id>'.$this->id.'</id>
-                    <name>'.$this->name.'</name>
-                </sphereofappl>';
-    }
     public function getAsTableRow(){
-        return '<tr>
-                    <td>'.$this->id.'</td>
-                    <td>'.$this->name.'</td>
+        return '<tr class="align-middle shadow-hover">
+                    <td class="fw-bold text-center">'.$this->id.'</td>
+                    <td class="fw-semibold text-primary">'.$this->name.'</td>
                     <td>
-                        <a class="btn btn-warning" href="./SpheresOfAppl.php?action=update&id='.$this->id.'">Редагувати</a>
-                        <a class="btn btn-danger" href="./SpheresOfAppl.php?action=delete&id='.$this->id.'">Видалити</a>
+                        <a class="btn btn-outline-warning btn-sm me-1" href="./SpheresOfAppl.php?action=update&id='.$this->id.'">Редагувати</a>
+                        <a class="btn btn-outline-danger btn-sm" href="./SpheresOfAppl.php?action=delete&id='.$this->id.'">Видалити</a>
                     </td>
                 </tr>';
     }
